@@ -1,60 +1,106 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account</title>
+  <title>Thunder Tryouts - Create Account</title>
+  <link rel="icon" href="favicon.ico" />
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; }
-    label { display: block; margin-top: 10px; }
-    input, select, button { width: 100%; padding: 10px; margin-top: 5px; }
-    .error { color: red; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f7f7f7;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      background: royalblue;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <h2>Create Account</h2>
-  <form id="signup-form">
-    <label>Email</label><input type="email" id="email" required />
-    <label>Password</label><input type="password" id="password" required />
-    <label>Name</label><input type="text" id="name" required />
-    <label>Role</label><select id="role">
-      <option value="Parent">Parent</option>
-      <option value="Coach">Coach</option>
-      <option value="Admin">Admin</option>
-    </select>
+  <form id="signupForm">
+    <label>Email
+      <input type="email" name="email" required>
+    </label>
+    <label>Password
+      <input type="password" name="password" required>
+    </label>
+    <label>Name
+      <input type="text" name="name" required>
+    </label>
+    <label>Role
+      <select name="role" required>
+        <option value="Parent">Parent</option>
+        <option value="Coach">Coach</option>
+        <option value="Admin">Admin</option>
+      </select>
+    </label>
     <button type="submit">Create Account</button>
-    <p class="error" id="error-msg"></p>
   </form>
+  <p id="status"></p>
 
   <script>
-    document.getElementById('signup-form').addEventListener('submit', async function(e) {
+    const form = document.getElementById("signupForm");
+    const status = document.getElementById("status");
+
+    const PROXY_URL = "https://corsproxy.io/?";
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbxXMsysVU0HbN6NaVoX1sR8ynD-nfyCeEpZ12HJ9R2hvczXAJjPo3QOROHNv9cJ_pvAqg/exec";
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      document.getElementById('error-msg').textContent = 'Creating account...';
+      status.textContent = "Creating account...";
+
+      const formData = new FormData(form);
       const payload = {
         signup: true,
-        email: email.value.trim(),
-        password: password.value.trim(),
-        name: name.value.trim(),
-        role: role.value.trim()
+        email: formData.get("email"),
+        password: formData.get("password"),
+        name: formData.get("name"),
+        role: formData.get("role")
       };
 
       try {
-        const response = await fetch('https://script.google.com/macros/s/AKfycbxXMsysVU0HbN6NaVoX1sR8ynD-nfyCeEpZ12HJ9R2hvczXAJjPo3QOROHNv9cJ_pvAqg/exec', {
-          method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch(PROXY_URL + GAS_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify(payload)
         });
 
         const result = await response.json();
         if (result.success) {
-          alert('Account created!');
+          status.textContent = "Account created! Redirecting...";
+          // Optionally redirect to login or dashboard
+          setTimeout(() => window.location.href = "login.html", 1500);
         } else {
-          document.getElementById('error-msg').textContent = 'Signup failed.';
+          status.textContent = "Signup failed.";
         }
       } catch (err) {
-        document.getElementById('error-msg').textContent = 'Signup error: ' + err.message;
+        console.error("Signup error:", err);
+        status.textContent = "Signup error: " + err.message;
       }
     });
   </script>
