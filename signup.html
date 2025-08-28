@@ -2,92 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Thunder Signup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Account – Thunder Tryouts</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background-color: #f2f2f2;
-    }
-    h2 {
-      color: #333;
-    }
-    form {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      max-width: 400px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
-    label {
-      display: block;
-      margin: 1rem 0 0.3rem;
-    }
-    input, select, button {
-      width: 100%;
-      padding: 0.6rem;
-      margin-bottom: 0.5rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1rem;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    #status {
-      margin-top: 1rem;
-      font-weight: bold;
-      color: red;
-    }
+    body { font-family: sans-serif; padding: 20px; max-width: 400px; margin: auto; }
+    label { display: block; margin-top: 15px; }
+    input, select, button { width: 100%; padding: 10px; margin-top: 5px; }
+    #status { margin-top: 20px; color: red; }
   </style>
 </head>
 <body>
-
   <h2>Create Account</h2>
-
   <form id="signupForm">
-    <label for="email">Email</label>
-    <input type="email" id="email" required />
-
-    <label for="password">Password</label>
-    <input type="password" id="password" required />
-
-    <label for="name">Name</label>
-    <input type="text" id="name" required />
-
-    <label for="role">Role</label>
-    <select id="role" required>
-      <option value="">Select Role</option>
-      <option value="Parent">Parent</option>
-      <option value="Coach">Coach</option>
-      <option value="Admin">Admin</option>
-    </select>
-
+    <label>Email <input type="email" name="email" required /></label>
+    <label>Password <input type="password" name="password" required /></label>
+    <label>Name <input type="text" name="name" required /></label>
+    <label>Role
+      <select name="role" required>
+        <option value="">Select Role</option>
+        <option value="Parent">Parent</option>
+        <option value="Coach">Coach</option>
+        <option value="Player">Player</option>
+      </select>
+    </label>
     <button type="submit">Create Account</button>
-    <div id="status"></div>
   </form>
+  <div id="status"></div>
 
   <script>
     const form = document.getElementById("signupForm");
-    const statusDiv = document.getElementById("status");
+    const status = document.getElementById("status");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      statusDiv.textContent = "Creating account...";
+      status.textContent = "Creating account...";
 
+      const formData = new FormData(form);
       const data = {
         signup: true,
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value,
-        name: document.getElementById("name").value,
-        role: document.getElementById("role").value
+        email: formData.get("email"),
+        password: formData.get("password"),
+        name: formData.get("name"),
+        role: formData.get("role"),
       };
 
       try {
@@ -99,19 +55,18 @@
 
         const result = await response.json();
         if (result.success) {
-          statusDiv.style.color = "green";
-          statusDiv.textContent = "Account created successfully!";
-          // Optionally redirect or clear form
+          status.style.color = "green";
+          status.textContent = "Account created successfully!";
+          form.reset();
         } else {
-          statusDiv.style.color = "red";
-          statusDiv.textContent = "Signup failed: " + (result.error || "Unknown error");
+          status.style.color = "red";
+          status.textContent = "Signup failed: " + (result.error || "Unknown error");
         }
       } catch (err) {
-        statusDiv.style.color = "red";
-        statusDiv.textContent = "Signup error: " + err.message;
+        status.style.color = "red";
+        status.textContent = "Signup error: " + err.message;
       }
     });
   </script>
-
 </body>
 </html>
