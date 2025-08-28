@@ -1,24 +1,99 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thunder Tryouts</title>
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="favicon.ico" />
-  <meta name="theme-color" content="#000000" />
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js');
-    }
-  </script>
+  <title>Thunder Tryouts - Create Account</title>
   <style>
-    html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-    iframe { width: 100%; height: 100%; border: none; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+    .message {
+      text-align: center;
+      font-weight: bold;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <iframe src="signup.html"></iframe>
+  <h2>Create Account</h2>
+  <form id="signupForm">
+    <label for="email">Email</label>
+    <input type="email" id="email" required />
+
+    <label for="password">Password</label>
+    <input type="password" id="password" required />
+
+    <label for="name">Name</label>
+    <input type="text" id="name" required />
+
+    <label for="role">Role</label>
+    <select id="role">
+      <option value="Parent">Parent</option>
+      <option value="Coach">Coach</option>
+      <option value="Admin">Admin</option>
+    </select>
+
+    <button type="submit">Create Account</button>
+    <div class="message" id="message"></div>
+  </form>
+
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const message = document.getElementById("message");
+      message.textContent = "Creating account...";
+
+      const payload = {
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value,
+        name: document.getElementById("name").value,
+        role: document.getElementById("role").value,
+        signup: true
+      };
+
+      const endpoint = "https://corsproxy.io/?" + encodeURIComponent(
+        "https://script.google.com/macros/s/AKfycbxXMsysVU0HbN6NaVoX1sR8ynD-nfyCeEpZ12HJ9R2hvczXAJjPo3QOROHNv9cJ_pvAqg/exec"
+      );
+
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await res.json();
+        if (result.success) {
+          message.textContent = "Account created successfully!";
+        } else {
+          message.textContent = "Signup failed.";
+        }
+      } catch (err) {
+        message.textContent = "Signup error: " + err.message;
+        console.error(err);
+      }
+    });
+  </script>
 </body>
 </html>
